@@ -1,0 +1,150 @@
+package main;
+
+public class Drvo {
+	String naziv;
+	float visina;
+	
+	public Drvo(String naziv, float visina) {
+		super();
+		this.naziv = naziv;
+		this.visina = visina;
+	}
+
+	public float getVisina() {
+		return visina;
+	}
+
+	@Override
+	public String toString() {
+		return "Drvo [naziv=" + naziv + ", visina=" + visina + "]";
+	}
+
+	
+	
+}
+package main;
+
+public class Jelka extends Drvo{
+	boolean busen;
+
+	public Jelka(String naziv, float visina,boolean busen) {
+		super(naziv, visina);
+		this.busen=busen;
+	}
+
+	public boolean isBusen() {
+		return busen;
+	}
+
+	
+	
+}
+package main;
+
+public interface Prostorija {
+	public float visina();
+	public int komada();
+	
+}
+package main;
+
+public class Skladiste implements Prostorija{
+	float visina;
+	int komadi;
+	Jelka[] jelke;
+	public Skladiste(float visina, Jelka[] jelke) {
+		super();
+		this.visina = visina;
+		
+		
+		int brojac=0;
+		for(int i=0;i<komadi;i++) {
+			if(jelke[i].isBusen()&&jelke[i].getVisina()<visina) {
+				brojac++;
+			}
+		}
+		
+		Jelka[] jelke2=new Jelka[brojac];
+		int br=0;
+		for(int i=0;i<komadi;i++) {
+			if(jelke[i].isBusen()&&jelke[i].getVisina()<visina) {
+				jelke2[br++]=jelke[i];
+			}
+		}
+		this.jelke=jelke2;
+	}
+	@Override
+	public float visina() {
+		// TODO Auto-generated method stub
+		return visina;
+	}
+	@Override
+	public int komada() {
+		// TODO Auto-generated method stub
+		return komadi;
+	}
+	public String merryXmas() {
+		String s=new String();
+		for(int i=0;i<jelke.length;i++) {
+			s=s+jelke[i].toString();
+		}
+		return s;
+	}
+	
+	
+	
+}
+package main;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+
+public class Bozic {
+	public boolean pomocna(String s) {
+		String da="da";
+		if(s.equals(da)) {
+			return true;
+		}else
+		return false;
+	}
+	public Jelka[] metoda() {
+		try {
+			BufferedReader in=
+					new BufferedReader(
+							new FileReader("Idila.txt"));
+			
+			int ukupno=Integer.parseInt(in.readLine());
+			Jelka[] jelka2=new Jelka[ukupno];
+			int br=0;
+			for(int i=0;i<ukupno;i++) {
+				String s=in.readLine();
+				String[] reci=s.split(",");
+				if(reci.length==3) {
+					Jelka jelka=new Jelka(reci[0], Integer.parseInt(reci[1]), pomocna(reci[2]));
+					jelka2[br++]=jelka;
+					
+				}
+			}
+			in.close();
+			return jelka2;
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+				
+	}
+	
+	
+	
+	public static void main(String[] args) {
+		Bozic bozic2022=new Bozic();
+		Jelka[] jelke=bozic2022.metoda();
+		Skladiste skladiste=new Skladiste(4, jelke);
+		System.out.println(jelke.length);
+		System.out.println(skladiste.merryXmas());
+		
+	}
+
+}

@@ -1,0 +1,173 @@
+public class Nepokretnost {
+	String vlasnik;
+	int brojParcele;
+	String opstina;
+	String povrsina;
+	public Nepokretnost(String vlasnik, int brojParcele, String opstina, String povrsina) {
+		super();
+		this.vlasnik = vlasnik;
+		this.brojParcele = brojParcele;
+		this.opstina = opstina;
+		this.povrsina = povrsina;
+	}
+	public String getVlasnik() {
+		return vlasnik;
+	}
+	
+	public int getBrojParcele() {
+		return brojParcele;
+	}
+	
+	public String getOpstina() {
+		return opstina;
+	}
+	
+	public String getPovrsina() {
+		return povrsina;
+	}
+	@Override
+	public String toString() {
+		return "Vlasnik=" + vlasnik + " ima parcelu broj " + brojParcele +
+				 "sa povrsinom od " + povrsina + " koja se nalazi u opstini"+opstina+".";
+	}
+	
+	
+}
+public class Objekat extends Nepokretnost{
+	String adresa;
+	boolean upotrebnaDozvola;
+	public Objekat(String vlasnik, int brojParcele, String opstina, String povrsina,String adresa,boolean upotrebnaDozvola) {
+		super(vlasnik, brojParcele, opstina, povrsina);
+		this.adresa=adresa;
+		this.upotrebnaDozvola=upotrebnaDozvola;
+		// TODO Auto-generated constructor stub
+	}
+	public boolean isUpotrebnaDozvola() {
+		return upotrebnaDozvola;
+	}
+	@Override
+	public String toString() {
+		return "Vlasnik "+vlasnik+" ima objekat u opstini" + opstina+" i na adresi" + adresa +".";
+	}
+	
+	
+	
+}
+public class Zemljiste extends Nepokretnost{
+	String vrstaZemljista;
+
+	public Zemljiste(String vlasnik, int brojParcele, String opstina, String povrsina,String vrstaZemljista) {
+		super(vlasnik, brojParcele, opstina, povrsina);
+		this.vrstaZemljista=vrstaZemljista;
+	}
+
+	@Override
+	public String toString() {
+		return  "Vlasnik " + vlasnik +"ima " + vrstaZemljista + " zemljiste, sa povrsinom od"+ povrsina +" , na teritoriji opstine"+ opstina+".";
+	}
+	
+	
+	
+}
+public class Katastar {
+	int brojZahteva;
+	String minPovrsina;
+	Nepokretnost[] nepokretnosti;
+	public Katastar(String minPovrsina, Nepokretnost[] nepokretnosti) {
+		super();
+		this.brojZahteva=0;
+		Objekat o;
+		int br=0;
+		this.minPovrsina = minPovrsina;
+		String[] podeli =minPovrsina.split("m");
+		int minPovrsinaBez_m_na_2=Integer.parseInt(podeli[0]);
+		int n=0;
+		for(int i=0;i<nepokretnosti.length;i++) {
+			br++;
+			String[] povrsina=nepokretnosti[i].getPovrsina().split("m");
+			
+			if(Integer.parseInt(povrsina[0])>=minPovrsinaBez_m_na_2) {
+				n++;
+				
+			}
+		}
+		Nepokretnost[] nepokretnosti2=new Nepokretnost[n];
+
+		for(int i=0;i<nepokretnosti.length;i++) {
+			br++;
+			String[] povrsina=nepokretnosti[i].getPovrsina().split("m");
+			
+			if(Integer.parseInt(povrsina[0])>=minPovrsinaBez_m_na_2) {
+				
+				if((nepokretnosti[i] instanceof Objekat)&&(((Objekat)(nepokretnosti[i])).isUpotrebnaDozvola())) {
+					nepokretnosti2[n++]=nepokretnosti[i];
+				}
+				
+				if(nepokretnosti[i] instanceof Zemljiste) {
+					nepokretnosti2[n++]=nepokretnosti[i];
+				}
+			}
+			
+			
+		}
+		this.nepokretnosti = nepokretnosti2;
+		this.brojZahteva=br;
+		
+	}
+	public int brojPrijava() {
+		return brojZahteva;
+	}
+	public void zahtevi() {
+		for(int i=0;i<nepokretnosti.length;i++) {
+			nepokretnosti[i].toString();
+		}
+	}
+	
+}
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+
+public class MainApp {
+
+	public static Nepokretnost[] ucitajNepokretnosi() throws Exception {
+		try {
+			BufferedReader in=new BufferedReader(new FileReader("Nepokretnosti.txt"));
+			
+			int ukupno=Integer.parseInt(in.readLine());
+			Nepokretnost[] nepokretnosti=new Nepokretnost[ukupno];
+			int br=0;
+			for(int i=0;i<ukupno;i++) {
+				String s=in.readLine();
+				String [] reci=s.split(",");
+				if (reci.length==6){;
+				Nepokretnost nepokretnost=new Objekat(reci[0], Integer.parseInt(reci[1]),reci[2], reci[3],reci[4],Boolean.parseBoolean(reci[5]));
+				nepokretnosti[br++]=nepokretnost;
+				}
+				if(reci.length==5) {
+					Nepokretnost nepokretnost=new Zemljiste(reci[0], Integer.parseInt(reci[1]),reci[2], reci[3],reci[4]);
+					nepokretnosti[br++]=nepokretnost;
+				}
+				
+			}
+			
+			in.close();
+			return nepokretnosti;
+
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		throw new RuntimeException();
+	}
+	
+	
+	public static void main(String[] args) throws Exception {
+		Katastar katastarNepokretnosti=new Katastar("20m^2",ucitajNepokretnosi() );
+		System.out.println(katastarNepokretnosti.nepokretnosti.length);
+		katastarNepokretnosti.zahtevi();
+	}
+
+}

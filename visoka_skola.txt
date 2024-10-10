@@ -1,0 +1,104 @@
+public class VisokaSkola implements Kriterijumi{
+	int minPoena;
+	int budzet;
+	int ostvariliUslov;
+	PrijavljeniKandidati[] prijavljeni;
+	public VisokaSkola(int minPoena, PrijavljeniKandidati[] prijavljeni) {
+		super();
+		this.minPoena = minPoena;
+		
+		this.ostvariliUslov=0;
+		int ostvariliUslov=0;
+		int n=0;
+		float zbir;
+		for(int i=0;i<prijavljeni.length;i++) {
+			zbir=prijavljeni[i].prosecnaOcena+prijavljeni[i].prijemni;
+			if(zbir>=minPoena) {
+				n++;
+				
+			}
+		}
+		PrijavljeniKandidati[] prijavljeni2=new PrijavljeniKandidati[n];
+		for(int i=0;i<prijavljeni.length;i++) {
+			zbir=prijavljeni[i].prosecnaOcena+prijavljeni[i].prijemni;
+			if(zbir>=minPoena) {
+				ostvariliUslov++;
+				prijavljeni2[n++]=prijavljeni[i];
+				
+			}
+		}
+		
+
+		this.prijavljeni = prijavljeni2;
+		this.ostvariliUslov=ostvariliUslov;
+	}
+	@Override
+	public int brojPrimljenih() {
+		// TODO Auto-generated method stub
+		return ostvariliUslov;
+	}
+	@Override
+	public void stampajPrimljene() {
+//		PrijavljeniKandidati[] oniKojiSuOstvariliUslov= new PrijavljeniKandidati[ostvariliUslov];
+		float zbir=0;
+		for(int i=0;i<prijavljeni.length;i++) {
+			zbir=prijavljeni[i].prosecnaOcena+prijavljeni[i].prijemni;
+			if(zbir>=minPoena) {
+				prijavljeni[i].toString();
+			}
+		}
+		
+	}
+	public int naBudzetu() {
+		float zbir=0;
+		int budzet=0;
+		for(int i=0;i<prijavljeni.length;i++) {
+			zbir=prijavljeni[i].prosecnaOcena+prijavljeni[i].prijemni;
+			if(zbir>51) {
+				budzet++;
+			}
+		}
+		return budzet;
+	}
+	
+}
+import java.io.*;
+public class MainApp {
+	public PrijavljeniKandidati[] ucitajPrijavljene() {
+	try {
+		BufferedReader in=
+				new BufferedReader(
+						new FileReader("studenti.txt"));
+		int ukupno=Integer.parseInt(in.readLine());
+		PrijavljeniKandidati[] prijavljeni=new PrijavljeniKandidati[ukupno];
+		int n=0;
+		for(int i=0;i<ukupno;i++) {
+			String s=in.readLine();
+			String [] reci=s.split(",");
+			PrijavljeniKandidati kandidat=new PrijavljeniKandidati(reci[0], reci[1], Integer.parseInt(reci[2]), Float.parseFloat(reci[3]), reci[4], Float.parseFloat(reci[4]));
+			prijavljeni[n++]=kandidat;
+		}
+		
+		
+		
+		
+		in.close();
+		return prijavljeni;
+	} catch (Exception e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	throw new RuntimeException();
+			
+	}
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		MainApp main=new MainApp();
+		VisokaSkola visokaPoslovnaSkola=new VisokaSkola(30,main.ucitajPrijavljene() );
+		System.out.println(visokaPoslovnaSkola.ostvariliUslov);
+		visokaPoslovnaSkola.stampajPrimljene();
+		System.out.println(visokaPoslovnaSkola.budzet);
+	}
+	
+
+}

@@ -1,0 +1,175 @@
+public class Kandidat implements Comparable<Kandidat>{
+	String ime;
+	String prezime;
+	int godine;
+	String radnoMesto;
+	public Kandidat(String ime, String prezime, int godine, String radnoMesto) {
+		super();
+		this.ime = ime;
+		this.prezime = prezime;
+		this.godine = godine;
+		this.radnoMesto = radnoMesto;
+	}
+	public String getIme() {
+		return ime;
+	}
+	
+	public String getPrezime() {
+		return prezime;
+	}
+	
+	public int getGodine() {
+		return godine;
+	}
+	
+	public String getRadnoMesto() {
+		return radnoMesto;
+	}
+	@Override
+	public int compareTo(Kandidat o) {
+		int n=prezime.compareTo(o.prezime);
+		
+			return n;
+				
+	}
+	
+	
+}
+public class Programer extends Kandidat{
+	boolean programskiJezik;
+
+	
+
+	public Programer(String ime, String prezime, int godine, String radnoMesto,boolean programskiJezik) {
+		super(ime, prezime, godine, radnoMesto);
+		this.programskiJezik=programskiJezik;
+	}
+
+
+
+	@Override
+	public String toString() {
+		return ime+prezime+" aplicira za poziciju programera.";
+	}
+	
+	
+}
+public class Zaposleni extends Kandidat{
+	String ostalePozicije;
+
+	public Zaposleni(String ime, String prezime, int godine, String radnoMesto) {
+		super(ime, prezime, godine, radnoMesto);
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public String toString() {
+		return ime+prezime+"aplicira za radno mesto: " + ostalePozicije ;
+	}
+	
+}
+public class ITKompanija {
+	int brojPrijavljenih;
+	Kandidat[] kandidati;
+	int radnaSposobnost;
+	public ITKompanija(Kandidat[] kandidati, int radnaSposobnost) {
+		super();
+		this.kandidati = kandidati;
+		this.radnaSposobnost = radnaSposobnost;
+		this.brojPrijavljenih=0;
+		int n=0;
+		
+		for(int i=0;i<kandidati.length;i++) {
+			if(kandidati[i].getGodine()>=radnaSposobnost) {
+				if((kandidati[i] instanceof Programer)&&(((Programer)(kandidati[i])).programskiJezik)) {
+					n++;
+				}
+				if(kandidati[i] instanceof Zaposleni) {
+					n++;
+				}
+			}
+		}
+		
+		Kandidat[] kandidati2=new Kandidat[n];
+		int br=0;
+		for(int i=0;i<kandidati.length;i++) {
+			if(kandidati[i].getGodine()>=radnaSposobnost) {
+				if((kandidati[i] instanceof Programer)&&(((Programer)(kandidati[i])).programskiJezik)) {
+					kandidati2[br++]=kandidati[i];
+				}
+				if(kandidati[i] instanceof Zaposleni) {
+					kandidati2[br++]=kandidati[i];
+				}
+			}
+		}
+		this.brojPrijavljenih=kandidati.length;
+		this.kandidati=kandidati;
+		
+	}
+	public int prijavljeni() {
+		return brojPrijavljenih;
+	}
+	public void stampajPrijavljenje() {
+		for(int i=0;i<kandidati.length;i++) {
+			if(kandidati[i] instanceof Programer) {
+				((Programer)(kandidati[i])).toString();
+			}else {
+				((Zaposleni)(kandidati[i])).toString();
+			}
+	}
+	}
+	
+}
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+
+public class MainApp {
+	public static Kandidat[] ucitajPrijavljenje() throws NumberFormatException, IOException {
+	try {
+		BufferedReader in=new BufferedReader(new FileReader("Kandidati.txt"));
+		
+		int ukupno=Integer.parseInt(in.readLine());
+		Kandidat[] kandidati=new Kandidat[ukupno];
+		int br=0;
+		for(int i=0;i<ukupno;i++) {
+			String s=in.readLine();
+			String [] reci=s.split(",");
+			if (reci[2].compareTo("Programer")==0){
+			Kandidat kandidat=new Kandidat(reci[0], reci[1], Integer.parseInt(reci[2]), reci[3]);
+			
+			kandidati[br++]=(Programer)kandidat;
+			}
+			if ((reci[2].compareTo("HR")==0)||(reci[2].compareTo("Menadzer")==0||(reci[2].compareTo("Pravnik")==0))){
+				Kandidat kandidat=new Kandidat(reci[0], reci[1], Integer.parseInt(reci[2]), reci[3]);
+				
+				kandidati[br++]=(Zaposleni)kandidat;
+				}
+			
+		}
+		for(int i=0;i<kandidati.length-1;i++) {
+			for(int j=1;j<kandidati.length;j++) {
+				kandidati[i].compareTo(kandidati[j]);
+			}
+		}
+		in.close();
+		return kandidati;
+
+	} catch (FileNotFoundException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	throw new RuntimeException();
+}
+	
+	
+	
+	public static void main(String[] args) throws RuntimeException, Exception{
+//		Kandidat[] prijavljeni=ucitajPrijavljenje();
+		ITKompanija energoSoft=new ITKompanija(ucitajPrijavljenje(), 18);
+		
+		System.out.println(energoSoft.prijavljeni());
+		energoSoft.stampajPrijavljenje();
+	}
+}
